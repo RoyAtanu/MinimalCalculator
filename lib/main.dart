@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -31,91 +29,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-}
-
 class MinimalCalculator extends StatefulWidget {
   const MinimalCalculator({super.key});
 
@@ -124,59 +37,81 @@ class MinimalCalculator extends StatefulWidget {
 }
 
 class _MinimalCalculatorState extends State<MinimalCalculator> {
-  double result = 0.0;
-  String history = "No history";
+  double result = 30.0;
+  String history = "";
   Operator lastOperator = Operator.none;
+  ButtonAction lastAction = ButtonAction.none;
+  double currentNumber = 0.0;
 
-  void _calculate(double number) {
+  void _calculate(double number, Operator operator) {
     setState(() {
-      if (lastOperator == Operator.plus) {
+      if (operator == Operator.plus) {
         result = result + number;
       }
-      if (lastOperator == Operator.minus) {
+      if (operator == Operator.minus) {
         result = result - number;
       }
-      if (lastOperator == Operator.multiply) {
+      if (operator == Operator.multiply) {
         result = result * number;
       }
-      if (lastOperator == Operator.divide) {
+      if (operator == Operator.divide) {
         result = result / number;
       }
-    });
-  }
-
-  void _setOperator(Operator operator) {
-    setState(() {
-      if (operator == Operator.equals) {
-        history = "No history";
-      } else if (operator == Operator.negate) {
-      } else if (operator == Operator.decimal) {
-      } else {
-        lastOperator = operator;
+      if (operator == Operator.none) {
+        result = number;
       }
     });
   }
 
   void _handleClick(String buttonText){
-    if (double.tryParse(buttonText) != null){
-      _calculate(double.parse(buttonText));
-    }
-    else{
-      switch(buttonText){
-        case "/":
-          _setOperator(Operator.divide);
-          break;
-        case "*":
-          _setOperator(Operator.multiply);
-          break;
-        case "-":
-          _setOperator(Operator.minus);
-          break;
-        case "+":
-          _setOperator(Operator.plus);
-          break;
+    setState(() {
+      if (double.tryParse(buttonText) != null){
+        double entry = double.parse(buttonText);
+        history += buttonText;
+        if (lastAction == ButtonAction.number){
+          currentNumber = (currentNumber * 10) + entry;
+        }
+        else{
+          lastAction = ButtonAction.number;
+          currentNumber = entry;
+        }
       }
-    }
+      else{
+        switch(buttonText){
+          case "/":
+            _calculate(currentNumber, lastOperator);
+            history += buttonText;
+            lastOperator = Operator.divide;
+            break;
+          case "*":
+            _calculate(currentNumber, lastOperator);
+            history += buttonText;
+            lastOperator = Operator.multiply;
+            break;
+          case "-":
+            _calculate(currentNumber, lastOperator);
+            history += buttonText;
+            lastOperator = Operator.minus;
+            break;
+          case "+":
+            _calculate(currentNumber, lastOperator);
+            history += buttonText;
+            lastOperator = Operator.plus;
+            break;
+          case "C":
+            result = 0.0;
+            history = "";
+            lastOperator = Operator.none;
+            break;
+          case "=":
+            _calculate(currentNumber, lastOperator);
+            history = "";
+            lastOperator = Operator.none;
+        }
+        currentNumber = 0.0;
+        lastAction = ButtonAction.operator;
+      }
+    });
   }
 
   @override
@@ -214,36 +149,40 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildButtonArray(""),
+            _buildButtonArray("C"),
             _buildButtonArray("0"),
             _buildButtonArray(""),
             _buildButtonArray("+")
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const [
-            Text(
-              "=",
-              style: TextStyle(fontSize: 60, fontWeight: FontWeight.w800),
-            )
-          ],
+        const Padding(padding: EdgeInsets.all(10.0)),
+        TextButton(
+          //style: ButtonStyle(c ),
+            onPressed: () => _handleClick("="),
+            child: const Text("=", style: TextStyle(color: Colors.white, fontSize: 80))
         )
       ],
     );
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [Text(history, style: const TextStyle(fontSize: 40))],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [Text('$result', style: const TextStyle(fontSize: 80))],
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [Text(history, style: const TextStyle(fontSize: 35, color: Colors.white))],
+                ),
+                const Padding(padding: EdgeInsets.all(5.0)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [Text('$result', style: const TextStyle(fontSize: 80, color: Colors.white))],
+                )
+              ],
             ),
             buttonArray,
           ],
@@ -257,8 +196,9 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         TextButton(
+          //style: ButtonStyle(c ),
           onPressed: () => _handleClick(buttonText),
-          child: Text(buttonText)
+          child: Text(buttonText, style: const TextStyle(color: Colors.white, fontSize: 40))
         )
       ],
     );
@@ -266,3 +206,4 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
 }
 
 enum Operator { plus, minus, multiply, divide, equals, negate, decimal, none }
+enum ButtonAction {operator, number, none}
