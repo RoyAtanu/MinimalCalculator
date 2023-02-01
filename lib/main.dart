@@ -63,21 +63,19 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
     });
   }
 
-  void _handleClick(String buttonText){
+  void _handleClick(String buttonText) {
     setState(() {
-      if (double.tryParse(buttonText) != null){
+      if (double.tryParse(buttonText) != null) {
         double entry = double.parse(buttonText);
         history += buttonText;
-        if (lastAction == ButtonAction.number){
+        if (lastAction == ButtonAction.number) {
           currentNumber = (currentNumber * 10) + entry;
-        }
-        else{
+        } else {
           lastAction = ButtonAction.number;
           currentNumber = entry;
         }
-      }
-      else{
-        switch(buttonText){
+      } else {
+        switch (buttonText) {
           case "/":
             _calculate(currentNumber, lastOperator);
             history += buttonText;
@@ -128,6 +126,7 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
             _buildButtonArray("/")
           ],
         ),
+        const Padding(padding: EdgeInsets.all(10.0)),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -137,6 +136,7 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
             _buildButtonArray("*")
           ],
         ),
+        const Padding(padding: EdgeInsets.all(10.0)),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -146,6 +146,7 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
             _buildButtonArray("-")
           ],
         ),
+        const Padding(padding: EdgeInsets.all(10.0)),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -156,34 +157,69 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
           ],
         ),
         const Padding(padding: EdgeInsets.all(10.0)),
-        TextButton(
-          //style: ButtonStyle(c ),
-            onPressed: () => _handleClick("="),
-            child: const Text("=", style: TextStyle(color: Colors.white, fontSize: 80))
+        SizedBox(
+          width: 340,
+          child: TextButton(
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    side: const BorderSide(color: Colors.white, width: 2.0)
+                )),
+              ),
+              onPressed: () => _handleClick("="),
+              child: const Text("=",
+                  style: TextStyle(color: Colors.white, fontSize: 60))),
         )
       ],
     );
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Center(
+      body: Container(
+        decoration: BoxDecoration(
+          // Box decoration takes a gradient
+          gradient: LinearGradient(
+            // Where the linear gradient begins and ends
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            // Add one stop for each color. Stops should increase from 0 to 1
+            stops: const [0.1, 0.5, 0.7, 0.9],
+            colors: [
+              // Colors are easy thanks to Flutter's Colors class.
+              Colors.green[800]!,
+              Colors.indigo[700]!,
+              Colors.purple[600]!,
+              Colors.orange[400]!,
+            ],
+          ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            const Padding(padding: EdgeInsets.all(5.0)),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  children: [Text(history, style: const TextStyle(fontSize: 35, color: Colors.white))],
+                  children: [
+                    Text(history,
+                        style:
+                            const TextStyle(fontSize: 35, color: Colors.white))
+                  ],
                 ),
                 const Padding(padding: EdgeInsets.all(5.0)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  children: [Text(sanitiseResult(result), style: const TextStyle(fontSize: 80, color: Colors.white))],
+                  children: [
+                    Text(sanitiseResult(result),
+                        style:
+                            const TextStyle(fontSize: 80, color: Colors.white))
+                  ],
                 )
               ],
             ),
+            const Padding(padding: EdgeInsets.all(5.0)),
             buttonArray,
           ],
         ),
@@ -196,19 +232,25 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         TextButton(
-          //style: ButtonStyle(c ),
-          onPressed: () => _handleClick(buttonText),
-          child: Text(buttonText, style: const TextStyle(color: Colors.white, fontSize: 40))
-        )
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                  side: const BorderSide(color: Colors.white, width: 2.0)
+              )),
+            ),
+            onPressed: () => _handleClick(buttonText),
+            child: Text(buttonText,
+                style: const TextStyle(color: Colors.white, fontSize: 40)))
       ],
     );
   }
 }
 
 enum Operator { plus, minus, multiply, divide, equals, negate, decimal, none }
-enum ButtonAction {operator, number, none}
 
-String sanitiseResult(double result){
+enum ButtonAction { operator, number, none }
+
+String sanitiseResult(double result) {
   if (result % 1 == 0) {
     return result.toStringAsFixed(0);
   } else {
