@@ -37,7 +37,7 @@ class MinimalCalculator extends StatefulWidget {
 }
 
 class _MinimalCalculatorState extends State<MinimalCalculator> {
-  double result = 30.0;
+  double result = 0.0;
   String history = "";
   Operator lastOperator = Operator.none;
   ButtonAction lastAction = ButtonAction.none;
@@ -180,7 +180,7 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
                 const Padding(padding: EdgeInsets.all(5.0)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  children: [Text('$result', style: const TextStyle(fontSize: 80, color: Colors.white))],
+                  children: [Text(sanitiseResult(result), style: const TextStyle(fontSize: 80, color: Colors.white))],
                 )
               ],
             ),
@@ -207,3 +207,11 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
 
 enum Operator { plus, minus, multiply, divide, equals, negate, decimal, none }
 enum ButtonAction {operator, number, none}
+
+String sanitiseResult(double result){
+  if (result % 1 == 0) {
+    return result.toStringAsFixed(0);
+  } else {
+    return result.toStringAsFixed(3);
+  }
+}
