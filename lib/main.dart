@@ -163,8 +163,7 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
               style: ButtonStyle(
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
-                    side: const BorderSide(color: Colors.white, width: 2.0)
-                )),
+                    side: const BorderSide(color: Colors.white, width: 2.0))),
               ),
               onPressed: () => _handleClick("="),
               child: const Text("=",
@@ -203,18 +202,26 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(history,
-                        style:
-                            const TextStyle(fontSize: 35, color: Colors.white))
+                    Expanded(
+                        child: Text(history,
+                            style: const TextStyle(
+                                fontSize: 35, color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            textAlign: TextAlign.right))
                   ],
                 ),
                 const Padding(padding: EdgeInsets.all(5.0)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(sanitiseResult(result),
-                        style:
-                            const TextStyle(fontSize: 80, color: Colors.white))
+                    Expanded(
+                        child: Text(sanitiseResult(result),
+                            style: const TextStyle(
+                                fontSize: 80, color: Colors.white),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            textAlign: TextAlign.right))
                   ],
                 )
               ],
@@ -235,8 +242,7 @@ class _MinimalCalculatorState extends State<MinimalCalculator> {
             style: ButtonStyle(
               shape: MaterialStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
-                  side: const BorderSide(color: Colors.white, width: 2.0)
-              )),
+                  side: const BorderSide(color: Colors.white, width: 2.0))),
             ),
             onPressed: () => _handleClick(buttonText),
             child: Text(buttonText,

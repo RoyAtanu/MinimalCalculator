@@ -1,11 +1,10 @@
-<<<<<<< HEAD
+
 # MinimalCalculator
-A calculator designed in Flutter for learning purpose
-=======
-# calculator
+A calculator designed in Flutter while I was learning app development using the framework.
 
-A minimalist calculator
+![Minimal Calculator](image/minimalcalculatorv1.png "Minimal Calculator")
 
+================================================
 ## Getting Started
 
 This project is a starting point for a Flutter application.
@@ -18,4 +17,3 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
->>>>>>> d0fb8ac (Initial commit)
